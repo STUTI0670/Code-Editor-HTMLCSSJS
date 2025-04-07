@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini CodePen Clone</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+    header {
+      background: #1e1e2f;
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    .main-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    .editor-panel, .preview-panel {
+      height: 100%;
+      overflow: auto;
+    }
+    .editor-panel {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 1rem;
+      background: #f0f0f5;
+    }
+    .editor-panel textarea {
+      flex: 1;
+      resize: vertical;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      transition: border-color 0.2s ease-in-out;
+    }
+    .editor-panel textarea:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+    .resizer {
+      width: 5px;
+      background: #ccc;
+      cursor: ew-resize;
+    }
+    .preview-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #ddd;
+      background: #ffffff;
+    }
+    .responsive-controls {
+      padding: 0.75rem 1rem;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 1px solid #ddd;
+    }
+    .responsive-controls select {
+      padding: 0.5rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    iframe {
+      flex-grow: 1;
+      border: none;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>&lt;/&gt; Mini CodePen</h1>
+    <span>Live HTML, CSS & JS Editor</span>
+  </header>
+
+  <div class="main-container">
+    <div class="editor-panel">
+      <textarea id="html" placeholder="Write HTML here..."></textarea>
+      <textarea id="css" placeholder="Write CSS here..."></textarea>
+      <textarea id="js" placeholder="Write JavaScript here..."></textarea>
+    </div>
+    <div class="resizer" id="dragbar"></div>
+    <div class="preview-panel">
+      <div class="responsive-controls">
+        <label for="viewport">Viewport:</label>
+        <select id="viewport" onchange="document.getElementById('preview').style.width = this.value">
+          <option value="100%">Desktop</option>
+          <option value="768px">Tablet</option>
+          <option value="375px">Mobile</option>
+        </select>
+      </div>
+      <iframe id="preview"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const htmlInput = document.getElementById('html');
+    const cssInput = document.getElementById('css');
+    const jsInput = document.getElementById('js');
+    const previewFrame = document.getElementById('preview');
+
+    function updatePreview() {
+      const html = htmlInput.value;
+      const css = `<style>${cssInput.value}</style>`;
+      const js = `<script>${jsInput.value}<\/script>`;
+      const content = `${html}\n${css}\n${js}`;
+      previewFrame.srcdoc = content;
+    }
+
+    [htmlInput, cssInput, jsInput].forEach(input => {
+      input.addEventListener('input', updatePreview);
+    });
+
+    updatePreview();
+
+    const dragbar = document.getElementById('dragbar');
+    const editorPanel = document.querySelector('.editor-panel');
+    const previewPanel = document.querySelector('.preview-panel');
+    let dragging = false;
+
+    dragbar.addEventListener('mousedown', function(e) {
+      dragging = true;
+      document.body.style.cursor = 'ew-resize';
+    });
+
+    window.addEventListener('mousemove', function(e) {
+      if (!dragging) return;
+      const offsetRight = document.body.clientWidth - e.clientX;
+      editorPanel.style.flex = `0 0 ${e.clientX}px`;
+    });
+
+    window.addEventListener('mouseup', function() {
+      dragging = false;
+      document.body.style.cursor = 'default';
+    });
+  </script>
+</body>
+</html>
